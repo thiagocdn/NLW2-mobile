@@ -8,12 +8,34 @@ import PageHeader from '../components/PageHeader';
 import styles from './styles';
 import TeacherItem from '../components/TeacherItem';
 import { BorderlessButton, RectButton } from 'react-native-gesture-handler';
+import api from '../../services/api';
 
 function TeacherList() {
+  const [teachers, setTeachers] = useState([]);
+
   const [isFiltersVisible, setIsFiltersVisible] = useState(false);
+  const [subject, setSubject] = useState('');
+  const [week_day, setWeek_day] = useState('');
+  const [time, setTime] = useState('');
 
   function handleToggleFilterVisible() {
     setIsFiltersVisible(!isFiltersVisible);
+  }
+
+  async function handleFiltersSubmit() {
+    console.log('hello');
+
+    const response = await api.get('classes', {
+      params: {
+        subject,
+        week_day,
+        time,
+      }
+    });
+
+    console.log(response.data);
+    
+    setTeachers(response.data);
   }
 
   return(
@@ -31,6 +53,8 @@ function TeacherList() {
             <Text style={styles.label}>Matéria</Text>
             <TextInput
               placeholderTextColor='#C1BCCC'
+              value={subject}
+              onChangeText={(text) => {setSubject(text)}}
               style={styles.input}
               placeholder='Qual a matéria?'
             />
@@ -41,6 +65,8 @@ function TeacherList() {
                 <Text style={styles.label}>Dia da semana</Text> 
                 <TextInput
                   placeholderTextColor='#C1BCCC'
+                  value={week_day}
+                  onChangeText={(text) => {setWeek_day(text)}}
                   style={styles.input}
                   placeholder="Qual o dia?"
                 />
@@ -49,6 +75,8 @@ function TeacherList() {
               <View style={styles.inputBlock}>
                 <Text style={styles.label}>Horário</Text> 
                 <TextInput
+                  value={time}
+                  onChangeText={(text) => {setTime(text)}}
                   placeholderTextColor='#C1BCCC'
                   style={styles.input}
                   placeholder="Qual horário?"
@@ -57,7 +85,7 @@ function TeacherList() {
 
             </View>
 
-            <RectButton style={styles.submitButton}>
+            <RectButton onPress={handleFiltersSubmit} style={styles.submitButton}>
               <Text style={styles.submitButtonText}>
                 Filtrar
               </Text>
